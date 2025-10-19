@@ -819,8 +819,18 @@ This CSV lists every assignment as a unique definition ID (Dk) with its variable
 \noindent
 This CSV reports, for each basic block, the sets \(\mathrm{gen}[B]\), \(\mathrm{kill}[B]\), \(\mathrm{in}[B]\), and \(\mathrm{out}[B]\) as definition IDs, summarizing which definitions are created, overwritten, and reach the block at entry and exit after convergence.
 
-\section*{Conclusion}
-We constructed control–flow graphs (CFGs) for each program by finding leaders and forming basic blocks, followed by adding fall–through and branch edges to obtain nodes \(N\) and edges \(E\), with cyclomatic complexity computed as \(CC = E - N + 2\). The HTML–styled node labels ensured one–statement–per–line readability in the figures. For data–flow, we performed Reaching Definitions: assigned unique IDs (Dk) to all assignments, computed per–block \(\mathrm{gen}[B]\) and \(\mathrm{kill}[B]\), and iterated the forward equations \( \mathrm{in}[B] = \bigcup_{P \in \mathrm{pred}(B)} \mathrm{out}[P] \) and \( \mathrm{out}[B] = \mathrm{gen}[B] \cup \bigl(\mathrm{in}[B] \setminus \mathrm{kill}[B]\bigr) \) to a fixed point (converging in two iterations). The exported CSVs (definitions map and per–block sets) provide data that match the tables in the report. Overall, the final \(\mathrm{IN}/\mathrm{OUT}\) table finds which definitions reach each block at entry and exit, enabling downstream optimizations and test–planning guided by CFG complexity.
+\section{Multiple possible reaching definitions}
+
+\noindent
+Variables can have multiple reaching definitions at a program point whenever different control–flow paths assign to the same variable before those paths join. In the final \(\mathrm{in}[B]\) sets, this appears as several definition IDs (e.g., D3, D17, D21) for the same variable reaching the entry of block \(B\); correspondingly, \(\mathrm{out}[B]\) may still contain multiple IDs if the block does not redefine that variable. Typical causes include:
+
+\begin{enumerate}
+    \item if/else chains that assign to the same variable in each branch;
+    \item loop bodies that reassign a variable and feed a back edge to the header;
+    \item switch/case arms with assignments that join later.
+\end{enumerate}
+
+Thus, any variable whose ID set size \(|\mathrm{in}[B] \cap \mathrm{Defs}(x)| > 1\) at some block \(B\) has multiple possible reaching definitions at that point, implying its value depends on the path taken.
 
 \section*{Conclusion}
 We constructed control–flow graphs (CFGs) for each program by finding leaders and forming basic blocks, followed by adding fall–through and branch edges to obtain nodes \(N\) and edges \(E\), with cyclomatic complexity computed as \(CC = E - N + 2\). The HTML–styled node labels ensured one–statement–per–line readability in the figures. For data–flow, we performed Reaching Definitions: assigned unique IDs (Dk) to all assignments, computed per–block \(\mathrm{gen}[B]\) and \(\mathrm{kill}[B]\), and iterated the forward equations \( \mathrm{in}[B] = \bigcup_{P \in \mathrm{pred}(B)} \mathrm{out}[P] \) and \( \mathrm{out}[B] = \mathrm{gen}[B] \cup \bigl(\mathrm{in}[B] \setminus \mathrm{kill}[B]\bigr) \) to a fixed point (converging in two iterations). The exported CSVs (definitions map and per–block sets) provide data that match the tables in the report. Overall, the final \(\mathrm{IN}/\mathrm{OUT}\) table finds which definitions reach each block at entry and exit, enabling downstream optimizations and test–planning guided by CFG complexity.
