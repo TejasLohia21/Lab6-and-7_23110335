@@ -155,13 +155,12 @@ def find_follow_block(lines, blocks, hdr_line, line2b):
             depth += 1; opened = True
         if '}' in lines[i]:
             depth -= 1
-            if opened and depth == 0:  # region closed
+            if opened and depth == 0: 
                 k = next_stmt(lines, i)
                 if k is not None and k in line2b:
                     return line2b[k]
                 break
         i += 1
-    # fallback: next block
     b = line2b.get(hdr_line, None)
     return (b+1) if b is not None and b+1 < len(blocks) else None
 
