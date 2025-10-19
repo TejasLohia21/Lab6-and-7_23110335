@@ -1,0 +1,13 @@
+\contentsline {chapter}{\numberline {1}Lab 6, Evaluation of Vulnerability Analysis Tools using CWE-based Comparison}{2}{chapter.1}%
+\contentsline {chapter}{\numberline {2}Lab 7 - Reaching Definitions Analyzer for C Programs}{28}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Introduction}{28}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Tools}{28}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Setup}{28}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Program corpus Selection}{29}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Control Flow Graphs}{29}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Regex patterns}{34}{subsection.2.5.1}%
+\contentsline {section}{\numberline {2.6}Results and Observations for Code1.c}{39}{section.2.6}%
+\contentsline {paragraph}{Iterations until convergence.}{43}{figure.caption.17}%
+\contentsline {section}{\numberline {2.7}Results for Code2.c}{45}{section.2.7}%
+\contentsline {section}{\numberline {2.8}Results for Code3.c}{51}{section.2.8}%
+\contentsline {section}{\numberline {2.9}Result and Discussion}{56}{section.2.9}%

@@ -1,0 +1,838 @@
+\documentclass[12pt, a4paper]{report}
+
+%==============================================================================
+% PACKAGES
+%==============================================================================
+\usepackage[utf8]{inputenc} % For text encoding
+\usepackage{xcolor}         % For defining custom colors
+\usepackage{tocloft} 
+\usepackage{amsmath}        % For math equations
+\usepackage{hyperref}       % For clickable links in the PDF
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[protrusion=true,expansion=true]{microtype} % load after lmodern
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{ragged2e}
+\usepackage{parskip} % no paragraph indent, adds space
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{amssymb} % For \checkmark symbol
+\usepackage{float}  % add this to the preamble
+\usepackage{pdfpages}
+
+%==============================================================================
+% DOCUMENT SETUP
+%==============================================================================
+
+% Set page margins
+\geometry{a4paper, margin=1in}
+
+% Define the custom orange color from your title page image
+\definecolor{customOrange}{HTML}{D28A32}
+\definecolor{sectionbar}{HTML}{E9A640} % orange bar color similar to the image
+\definecolor{sectiontext}{HTML}{2B2B2B}
+
+% Setup for hyperref (makes ToC and references clickable)
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    citecolor=black
+}
+
+% Wide, colored bar style for "section-like" headers
+\newcommand{\sectionbar}[1]{%
+  \vspace{0.6\baselineskip}%
+  \noindent
+  \colorbox{sectionbar}{%
+    \parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+      \textbf{\Large\textsf{#1}}%
+    }%
+  }%
+  \vspace{0.6\baselineskip}
+}
+
+% Body text tweaks
+\setstretch{1.2}
+\setlist[itemize]{leftmargin=1.2em}
+\setlist[enumerate]{leftmargin=1.2em}
+
+% Section title spacing (not used directly since we use custom bars)
+\titlespacing*{\section}{0pt}{1ex}{0.6ex}
+
+% Figure captions smaller and tight
+\captionsetup{font=small,labelfont=bf}
+
+% Footer with page number
+\pagestyle{fancy}
+\fancyhf{}
+\cfoot{\thepage}
+
+%==============================================================================
+% BEGIN DOCUMENT
+%==============================================================================
+\begin{document}
+
+%==============================================================================
+% TITLE PAGE
+% This is a custom title page environment to replicate your image.
+%==============================================================================
+\begin{titlepage}
+    \centering
+    \vspace*{\fill} % Pushes content down vertically
+    
+    % --- Main Title ---
+    {\color{customOrange}\Huge\bfseries ASSIGNMENT 2}
+    
+    \vspace{0.75cm} % Space between title and subtitle
+    
+    % --- Subtitle ---
+    {\Large\bfseries Software Tools and Techniques for CSE}
+    
+    \vfill % Flexible vertical space
+    
+    % --- Author Info Box ---
+    % \colorbox creates the colored background
+    % \parbox creates a container for the text inside
+    \colorbox{customOrange}{%
+        \parbox{1.0\textwidth}{%
+            \centering
+            \vspace{1em} % Padding top
+            {\Large\color{white} Tejas Lohia and Zainab Kapadia} \\[0.5em] % Your name
+            {\large\color{white} 23110335 and 23110373} % Your ID
+            {\large\color{white} \mbox{\url{https://github.com/TejasLohia21/Lab6-and-7_23110335}}} % GitHub repo link
+            \vspace{1em} % Padding bottom
+        }
+    }
+    
+    \vspace*{\fill} % Pushes the author box up from the bottom
+\end{titlepage}
+
+
+%==============================================================================
+% FRONT MATTER (Table of Contents, etc.)
+%==============================================================================
+% \pagenumbering{arabic}
+
+
+\renewcommand{\cfttoctitlefont}{\hfill} 
+\renewcommand{\cftaftertoctitle}{\hfill}
+{\noindent\colorbox{customOrange}{\parbox{\textwidth}{\vspace{0.4em}\Large\bfseries\color{white}\hspace{1em}TABLE OF CONTENTS\vspace{0.4em}}}}
+
+% --- Generate the list of contents ---
+\tableofcontents 
+
+% ===== insert immediately after \begin{document} =====
+\chapter{Lab 6, Evaluation of Vulnerability Analysis Tools using CWE-based Comparison}
+\includepdf[pages=-,pagecommand={},fitpaper=true]{/Users/tejasmacipad/Downloads/lab6.pdf}
+% ===== Lab 7 content starts below this line =====
+
+
+%=================================
+%       LABORATORY SESSION 1
+%=================================
+\chapter{Lab 7 - Reaching Definitions Analyzer for C Programs}
+% \section{Reaching Definitions Analyzer for C Programs}
+\section{Introduction}
+
+The aim of this laboratory was to provide hands-on experience with the program analysis techniques. This laboratory focuses on implementation of automated Control Flow Graph (CFG) generation from C programs, and performing Reaching Definitions (RD) analysis on the generated CFGs. The RD analysis helps in understanding how variable definitions propagate through the program, which is crucial for various applications such as optimization, debugging, and code comprehension.
+\
+\section{Tools}
+
+\begin{itemize}
+    \item \textbf{Programming Language:} Python 3.12.9 --- Used for code and using pylint library.
+    \item \textbf{Editor/IDE:} Visual Studio Code --- Used for coding, debugging and execution.
+    \item \textbf{Version Control:} Git and GitHub --- Used to track and the changes in the code, and to improve maintainability of the codebases.
+    \item \textbf{Gcc compiler:} Gcc version 14.2.0 --- Used to compile and run C programs.
+    \item \textbf{Virtual Environment:} venv --- To prevent library version conflicts by isolating working environments.
+\end{itemize}
+
+\
+\section{Setup}
+
+To configure GitHub for this project, I had to setup virtual environment on my machine and Visual Studio Code (VS Code) as the code editor. 
+
+\
+\section{Program corpus Selection}
+
+The three programs chosen are written in C language.
+
+They satisfied the following criteria:
+\begin{itemize}
+    \item The programs are small to medium-sized, with a manageable number of lines of code (between 200 to 300 lines).
+    \item The programs contains a single main function as mentioned in the question and also the file is the only standalone source file for the ease of analysis.
+    \item Chosen program contain conditionals like if-else, loops like for, while.
+    \item The programs include variable assignments and definitions that can be tracked through the RD analysis.
+\end{itemize}
+
+\section{Control Flow Graphs}
+
+A Control Flow Graph (CFG) is a graphical representation of all paths that might be traversed through a program during its execution. In a CFG, nodes represent basic blocks (a sequence of consecutive statements with a single entry point and a single exit point), and directed edges represent the flow of control between these blocks.
+
+Rules to find leaders:
+\begin{itemize}
+    \item The first statement is a leader.
+    \item Any statement that is the target of a conditional or unconditional jump is a leader.
+    \item Any statement that immediately follows a conditional or unconditional jump is a leader.
+\end{itemize}
+
+
+
+\sectionbar{METHODOLOGY AND EXECUTION}
+
+Gcc compiled and executed three C codes. Following pipeline was used to generate CFG and generate other information.
+
+\begin{itemize}
+    \item \textbf{Detect leaders:}
+    \begin{itemize}
+        \item Parsing the entire code and extracting the lines to categorize them as leaders.
+        \item Using the detected leaders and the ending points through the codes, basics blocks were build each corresponding to the node of the CFG.
+        \item Using the basic blocks generated, edges were added to connect these blocks based on the control flow. Fall through edges wered added when the blocks did not end with return, break or continue. Two way edges wered added for if, while and for headers.
+        \item Based on the blocks and edges, Cyclomatic complexity was generated.
+        \item For reaching definitions, enumerated through the assignments and computed gen(B) and kill(B). Using this iterated until convergence for the forward flow.
+    \end{itemize}
+    \item \textbf{Defining dictionary to map various keywords}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-14 at 03.30.10.jpeg}
+            \caption{Defining keywords for leader identification}
+            \label{fig:diff-example}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Explanation of the dictionary:}
+            \begin{itemize}
+                \item This snippet defines a dictionary for compiled regex patterns.
+                \item These regex patterns are used to recognize the keywords and the flow in the code to identify the leaders and the endings of the block which are required to form the nodes and hence the Control Flow Graphs.
+            \end{itemize}
+        \end{itemize}
+
+    \item \textbf{Support functions}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-14 at 03.30.39.jpeg}
+            \caption{Support functions}
+            \label{fig:diff-example2}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Explanation of support functions}
+            \begin{itemize}
+                \item readfile in the basic function which takes the code as the input reading it as the text file in UTF\-8 text and returning it as string.
+                \item structural\_only is the function which is used to find the parts in the code which are actually executable by checking the content inside the {} brackets.
+                \item next\_stmt is the function which is used to find the next real\/executable statement the in the codes after current line using the structural\_only code.
+                \item first\_stmt\_in\_bock is the function which finds the first executable statement after the start line.
+            \end{itemize}
+        \end{itemize}
+
+    \item \textbf{This is the main function to identify the leader lines from the code}
+    \item This function is to find all the indices that represent the entry point of logical blocks and statements.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-14 at 03.30.59.jpeg}
+            \caption{Distribution of number of fix types.}
+            \label{fig:diff-example-3}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Explanation of Code for finding leaders:}
+            \begin{itemize}
+                \item The code is passed as the input to the function leader, and the code is split into lines stored in the variable lines. ls is initialized set to store unique leaders line indices. labels is a dictionary to map label names to their line indices.
+                \item In the first step we enumerate thru all the lines, and check if any of the lines has a match with withe function header using regex and then first\_stmt\_in\_block function is called to find the first executable statement in the function block and add it to the set of leaders.
+                \item Then we find teh first executable statement in the code and add it to the set of leaders.
+                \item Next we check if it matches a label, and if it does, we record its position marking it as the leader.
+                \item Again the code iterates throught some pre\-defined header\_keys and checks if the lines contains any construct like iff, else, for, while or do, and if it does, its marked as the leaders. After that, we iterate further using the function to find the next executable statement and add it to the ls set.
+                \item After keywords like break, continue or return, the next statement can be a flow entry point, so again added to the set ls.
+                \item After closing brackets, the next statemet could be a leader, so added to the set ls. This is followed by goto statement, where the target label is marked as the leader.
+                \item Finally, the set ls is returned as the output of the function after being sorted.
+            \end{itemize}
+        \end{itemize}
+
+    \newpage
+
+
+    \item \textbf{Generation of basic blocks from the leaders identified}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-14 at 21.28.11.jpeg}
+            \caption{Generating basic blocks.}
+            \label{fig:diff-example-4}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Explanation of Code for building basic blocks:}
+            \begin{itemize}
+                \item nonstruct functions check if the code line is a real statement and not just structure or a comment
+                \item build\_blocks\_from\_leaders function takes the code lines and the identified leaders as input. These blocks are basic ones with Continuous lines without jump.
+                \item The leaders are then sorted and duplicates are removed. 
+                \item For every pair of consecutive leader indices, start variable holds the index of this starting of the block and end variable for the end of the block.
+                \item Then by iteration from the beginning and from the end of the block, we find the first and last executable statements in the block using the nonstruct function.
+                \item This is added to the blocks and returned.
+            \end{itemize}
+        \end{itemize}
+
+    \item \textbf{Generation of control flow graphs}
+    \item This part of the code uses regular expressions and code block analysis to detect the flow from one basic block to another, thereby constructing a control flow graph (CFG) of the program.
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-14 at 22.00.19.jpeg}
+            \caption{Generating CFG.}
+            \label{fig:diff-example-55}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Explanation of Code for building control flow graphs:}
+            \begin{itemize}
+                \item We define regex patters to identify various control flow constructs like if, else, for, while, do, break, continue, return and goto.
+                \subsection{Regex patterns}
+
+                \item The construction of edges in the Control Flow Graph (CFG) is based on the analysis of control statements and block boundaries. For each basic block, the outgoing edges are determined by the following rules:
+
+                \begin{itemize}
+                    \item \textbf{is\_branch\_hdr:} Matches any line starting with if, while, or for. Used to find branching statements.
+                    \item \textbf{is\_return:} Matches any line with a return statement, typically an exit point.
+                    \item \textbf{is\_break:} Matches any line with a break; statement, found in loops\/switches.
+                    \item \textbf{is\_continue:} Matches any line with a continue; statement, found in loops to skip to next.
+                \end{itemize}
+                \item nonstruct function check if the code line is a real statement and not just structure or a comment
+                \item last\_stmt\_line finds the last real, non-structural code statement within a block.
+                \item build\_cfg\_edges is the main function used to generate the edges of the CFG based on blocks and lines of code.
+                \item Each block is given a name from B0, B1 and so on.
+                \item For every block, we find the last executable statement using last\_stmt\_line function and its index is assigned to the variable k.
+                \item If this last line is not a return, break or continue statement, we add a fall-through edge to the next block. 
+                \item If the last line is a branching header (if, while, for), if true then, jump to next block and if false, jump to the block after that.
+                \item cfg\_metrics is used to calculate Cyclomatic complexity using the formula E - N + 2P, where E is number of edges, N is number of nodes and P is number of connected components.
+            \end{itemize}
+        \end{itemize}
+
+
+    \item \textbf{Reaching Definitions Analysis}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 01.01.16.jpeg}
+            \caption{Support functions.}
+            \label{fig:diff-example-56}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Support Functions for Reaching definitions analysis:}
+            \begin{itemize}
+                \item assign\_pat is a regular expression that matches assignments to variables, and is used to find where a variable gets a new value.
+                \item nonstruct is a code which is to check if a code is a real statement, not just a structural line.
+                \item block\_names is a function that generates symbolix names for each code block.
+                \item collect\_definitions finds all variable definitions within each block of code. For every block, it splits the compound using statement ; and it checks for assignment using the function assign\_pat. If a match is found, it records the variable name and the line number where it was defined. Reconfirms by checking not structural or comment line and then it records tuple.
+                \item Returns a list of all variables definitions found in the blocks.
+                \item geb\_kill\_per\_block checks for each block, which assignments were killed in that block. It builds a set of killed definitions assignment to the same variable in other blocks.
+                \item preds is the final function, which finally generates the edges in the graph.
+            \end{itemize}
+        \end{itemize}
+    
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 01.01.37.jpeg}
+            \caption{Reaching Definitions.}
+            \label{fig:diff-example-57}
+        \end{figure}
+
+        \begin{itemize}
+            \item \textbf{Reaching Definitions:}
+            \begin{itemize}
+                \item Each block is assigned a symbolic name like B0, B1 and so on.
+                \item IN and OUT for each block contains the mapping, that will eventually hold which definitions reach that block before\/after.
+                \item preds function finds which blocks are predecessor to each block.
+                \item Runs an interation until convergence, that is it runs until there is a change capped to 100 iterations.
+                \item Within each iteration, for every block we start with an empty set.
+                \item For every predecessor block p, union together all definitions that can exit the block thus giving candidate definitions that could reach the entrance of this block.
+                \item candidates that are reassighned during the iteration, are removed because of being overwritten.
+                \item We also add the locally generated variables.
+                \item Finally in\_new and out\_new are updated and in case there is no change in these for any of the blocks, we stop the iteration.
+            \end{itemize}
+        \end{itemize}
+
+     \item \textbf{Analysis and result generating codes}
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 04.15.09.jpeg}
+            \caption{Dot file generation}
+            \label{fig:diff-example-58}
+        \end{figure}
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 04.15.16.jpeg}
+            \caption{Generating CSV.}
+            \label{fig:diff-example-59}
+        \end{figure}
+
+        \begin{figure}[h!]
+            \centering
+            \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 04.15.25.jpeg}
+            \caption{Printing other results.}
+            \label{fig:diff-example-60}
+        \end{figure}
+
+\end{itemize}
+
+% \
+% \section{Results for Code1.c}
+
+% \begin{itemize}
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.08.38 (1).jpeg}
+%         \caption{identified leaders for code 1.}
+%         \label{fig:diff-example-61}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.13.32.jpeg}
+%         \caption{Basic blocks for code1.}
+%         \label{fig:diff-example-62}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.14.42.jpeg}
+%         \caption{Edges for the identified blocks.}
+%         \label{fig:diff-example-63}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.19.04.jpeg}
+%         \caption{CC value for code1.}
+%         \label{fig:diff-example-64}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.20.44.jpeg}
+%         \caption{First 20 reachable blocks.}
+%         \label{fig:diff-example-65}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.21.57.jpeg}
+%         \caption{Early reachable blocks.}
+%         \label{fig:diff-example-66}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.21.57.jpeg}
+%         \caption{Gen and kill of blocks.}
+%         \label{fig:diff-example-67}
+%     \end{figure}
+
+%     \textbf{Iterations until convergence:}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.25.50.jpeg}
+%         \caption{Iterations.}
+%         \label{fig:diff-example-68}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.27.45.jpeg}
+%         \caption{Iteration - 2.}
+%         \label{fig:diff-example-69}
+%     \end{figure}
+
+%     \item \begin{figure}[h!]
+%         \centering
+%         \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.29.30.jpeg}
+%         \caption{Final IN and OUT.}
+%         \label{fig:diff-example-70}
+%     \end{figure}
+
+%     \textbf{Converged in two iterations.}
+
+% \end{itemize}
+
+% \newpage
+
+% \section{Results for Code1.c}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.08.38 (1).jpeg}
+% \caption{identified leaders for code 1.}
+% \label{fig:diff-example-61}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.13.32.jpeg}
+% \caption{Basic blocks for code1.}
+% \label{fig:diff-example-62}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.14.42.jpeg}
+% \caption{Edges for the identified blocks.}
+% \label{fig:diff-example-63}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.19.04.jpeg}
+% \caption{CC value for code1.}
+% \label{fig:diff-example-64}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.20.44.jpeg}
+% \caption{First 20 reachable blocks.}
+% \label{fig:diff-example-65}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.21.57.jpeg}
+% \caption{Early reachable blocks.}
+% \label{fig:diff-example-66}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.21.57.jpeg}
+% \caption{Gen and kill of blocks.}
+% \label{fig:diff-example-67}
+% \end{figure}
+% \paragraph{Iterations until convergence.}\vspace{0.25\baselineskip}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.25.50.jpeg}
+% \caption{Iterations.}
+% \label{fig:diff-example-68}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.27.45.jpeg}
+% \caption{Iteration - 2.}
+% \label{fig:diff-example-69}
+% \end{figure}
+% \begin{figure}[htbp]
+% \centering
+% \includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.29.30.jpeg}
+% \caption{Final IN and OUT.}
+% \label{fig:diff-example-70}
+% \end{figure}
+
+
+% \newpage
+
+% \section{Results for Code2.c}
+
+
+\newpage
+\section{Results and Observations for Code1.c}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.08.38 (1).jpeg}
+\caption{Identified leaders for code 1.}
+\label{fig:diff-example-61}
+\end{figure}
+
+\noindent In this step, we mark leader lines in code1.c that start basic blocks: the function entry, each loop and conditional header, each case/default label, and the first statement after conditional or loop bodies. These leaders partition the program into maximal straight-line regions to be used for CFG construction in the next step.\
+\newline
+\noindent For code1.c, number of identified leaders = \textbf{131}.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.13.32.jpeg}
+\caption{Basic blocks for code1.}
+\label{fig:diff-example-62}
+\end{figure}
+
+\noindent This figure lists all the basic blocks using the identified leaders from the previous step. Each block contains a sequence of statements with a single entry and exit point. These blocks will serve as nodes in the Control Flow Graph (CFG) constructed in the next step.  For every block Bk, the range [s,e) shows its line indices and the indented lines show the statements it contains, excluding brace‑only and preprocessor lines.\
+\newline
+\noindent For code1.c, number of basic blocks = \textbf{131}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.14.42.jpeg}
+\caption{Edges for the identified blocks.}
+\label{fig:diff-example-63}
+\end{figure}
+
+\noindent For code1.c, number of edges = \textbf{203}.
+
+\noindent This list enumerates the CFG edges between basic blocks. A fall edge denotes sequential flow to the next block, while true/false edges arise from conditional headers (if/while/for) and split control accordingly. Using the overall structure, we find out the number of edges, nodes in the CFG, and then we calculate the Cyclomatic Complexity (CC) using the formula CC = E - N + 2P, where E is edges, N is nodes, and P is connected components.\
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.19.04.jpeg}
+\caption{CC value for code1.}
+\label{fig:diff-example-64}
+\end{figure}
+
+\noindent CFG Cyclomatic complexity (CC) quantifies the number of linearly independent paths through the program. A higher CC indicates more complex control flow, which impacts maintainability. For code1.c, CC = \textbf{73}, indicating normal complexity with multiple decision points and loops.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.20.44.jpeg}
+\caption{First 20 Defined blocks.}
+\label{fig:diff-example-65}
+\end{figure}
+
+\noindent This output lists the first 20 variable definitions found in code1.c. Each definition is represented as a tuple (variable name, line number) indicating where a variable is assigned a value. These definitions form the basis for the Reaching Definitions analysis performed later.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.21.57.jpeg}
+\caption{Early reachable blocks.}
+\label{fig:diff-example-66}
+\end{figure}
+
+\noindent This figure shows the gen/kill sets per basic block for Reaching Definitions. For each block Bk, gen lists the definitions Dk created inside the block, while kill lists other definitions of the same variables that are invalidated by writing new values in this block
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.21.57.jpeg}
+\caption{Gen and kill of blocks.}
+\label{fig:diff-example-67}
+\end{figure}
+
+\paragraph{Iterations until convergence.}\vspace{0.25\baselineskip}
+
+\noindent
+Figure~\ref{fig:diff-example-68} shows the forward data-flow iterations for reaching definitions. 
+In each iteration, every basic block \(B\) updates its set using
+\( \mathrm{in}[B] = \bigcup_{P \in \mathrm{pred}(B)} \mathrm{out}[P] \)
+and
+\( \mathrm{out}[B] = \mathrm{gen}[B] \cup \bigl(\mathrm{in}[B] \setminus \mathrm{kill}[B]\bigr) \).
+The rows illustrate how definition IDs go downward along the CFG edges across progressive rounds until no set is changed, indicating convergence to the fixed point.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.25.50.jpeg}
+\caption{Iterations.}
+\label{fig:diff-example-68}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.27.45.jpeg}
+\caption{Iteration - 2.}
+\label{fig:diff-example-69}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-15 at 05.29.30.jpeg}
+\caption{Final IN and OUT.}
+\label{fig:diff-example-70}
+\end{figure}
+
+\noindent
+The RD analysis converged in two iterations: after the second round of updates, no block’s \(\mathrm{in}[\cdot]\) or \(\mathrm{out}[\cdot]\) set changed, so we say that the flows have converged to the final result.
+
+
+\clearpage
+\section{Results for Code2.c}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.38.52.jpeg}
+\caption{Generating leaders from the source code.}
+\label{fig:diff-example-71}
+\end{figure}
+
+\noindent For code2.c, number of identified leaders = \textbf{122}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 14.23.43.jpeg}
+\caption{Printing blocks from the identified leaders.}
+\label{fig:diff-example-72}
+\end{figure}
+
+\noindent For code2.c, number of basic blocks = \textbf{122}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 14.29.12.jpeg}
+\caption{Edges between the blocks.}
+\label{fig:diff-example-73}
+\end{figure}
+
+\noindent For code2.c, number of edges = \textbf{203}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 20.45.42.jpeg}
+\caption{Printing the Cyclomatic complexity.}
+\label{fig:diff-example-74}
+\end{figure}
+
+\noindent For code2.c, Cyclomatic Complexity (CC) = \textbf{83}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 14.40.17.jpeg}
+\caption{Reaching Definitions.}
+\label{fig:diff-example-75}
+\end{figure}
+
+\noindent This output lists the first 20 variable definitions found in code2.c. Each definition is represented as a tuple (variable name, line number) indicating where a variable is assigned a value. These definitions form the basis for the Reaching Definitions analysis performed later.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 14.51.20.jpeg}
+\caption{Generating and kills per block.}
+\label{fig:diff-example-77}
+\end{figure}
+
+\noindent This figure shows the gen/kill sets per basic block for Reaching Definitions. For each block Bk, gen lists the definitions Dk created inside the block, while kill lists other definitions of the same variables that are invalidated by writing new values in this block
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.29.08.jpeg}
+\caption{Iteration 1.}
+\label{fig:diff-example-78}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.29.29.jpeg}
+\caption{Iteration 2.}
+\label{fig:diff-example-79}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 14.45.32.jpeg}
+\caption{Final IN and OUT after iteration convergence.}
+\label{fig:diff-example-76}
+\end{figure}
+
+\noindent
+Reaching–definitions converged quickly: after Iteration~1 and Iteration~2, no further changes occurred in any block’s \(\mathrm{in}[\cdot]\) or \(\mathrm{out}[\cdot]\) sets. The third panel reports these final fixed‑point sets per block.
+
+\clearpage
+\section{Results for Code3.c}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.43.51.jpeg}
+\caption{Generating leaders from the source code.}
+\label{fig:diff-example-80}
+\end{figure}
+
+\noindent For code3.c, number of identified leaders = \textbf{104}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.45.09.jpeg}
+\caption{Printing blocks from the identified leaders.}
+\label{fig:diff-example-81}
+\end{figure}
+
+\noindent For code3.c, number of basic blocks = \textbf{104}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.46.33.jpeg}
+\caption{Edges between the blocks.}
+\label{fig:diff-example-82}
+\end{figure}
+
+\noindent For code3.c, number of edges = \textbf{167}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 20.47.28.jpeg}
+\caption{Printing the Cyclomatic complexity.}
+\label{fig:diff-example-83}
+\end{figure}
+
+\noindent For code3.c, Cyclomatic Complexity (CC) = \textbf{65}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.49.12.jpeg}
+\caption{Reaching Definitions.}
+\label{fig:diff-example-84}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 15.50.16.jpeg}
+\caption{Generating and kills per block.}
+\label{fig:diff-example-85}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 17.13.30.jpeg}
+\caption{Iteration 1.}
+\label{fig:diff-example-86}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 17.13.37.jpeg}
+\caption{Iteration 2.}
+\label{fig:diff-example-87}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{/Users/tejasmacipad/Downloads/WhatsApp Image 2025-10-19 at 17.15.58.jpeg}
+\caption{Final IN and OUT after iteration convergence.}
+\label{fig:diff-example-88}
+\end{figure}
+
+\noindent
+The reaching–definitions process for this program stabilized quickly: after two iterations (Figures~\ref{fig:diff-example-86} and \ref{fig:diff-example-87}), no entries changed, and the final panel reports the fixed‑point \(\mathrm{IN}\) and \(\mathrm{OUT}\) sets for every block (Figure~\ref{fig:diff-example-88}). These sets summarize which definition IDs are visible on entry to and exit from each basic block at convergence.
+
+
+\section{Result and Discussion}
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{10pt}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Program No.} & \textbf{No. of Nodes (N)} & \textbf{No. of Edges (E)} & \textbf{Cyclomatic Complexity (CC)} \\
+\hline
+Code 1 & 131 & 202 & 73 \\
+Code 2 & 122 & 203 & 83 \\
+Code 3 & 104 & 167 & 65 \\
+\hline
+\end{tabular}
+\caption{CFG metrics summary for each program.}
+\label{tab:cfg-metrics}
+\end{table}
+
+\noindent
+This CSV lists every assignment as a unique definition ID (Dk) with its variable, source line, basic block, and original statement text, providing a canonical reference for later data–flow tables.
+
+\noindent
+This CSV reports, for each basic block, the sets \(\mathrm{gen}[B]\), \(\mathrm{kill}[B]\), \(\mathrm{in}[B]\), and \(\mathrm{out}[B]\) as definition IDs, summarizing which definitions are created, overwritten, and reach the block at entry and exit after convergence.
+
+\section*{Conclusion}
+We constructed control–flow graphs (CFGs) for each program by finding leaders and forming basic blocks, followed by adding fall–through and branch edges to obtain nodes \(N\) and edges \(E\), with cyclomatic complexity computed as \(CC = E - N + 2\). The HTML–styled node labels ensured one–statement–per–line readability in the figures. For data–flow, we performed Reaching Definitions: assigned unique IDs (Dk) to all assignments, computed per–block \(\mathrm{gen}[B]\) and \(\mathrm{kill}[B]\), and iterated the forward equations \( \mathrm{in}[B] = \bigcup_{P \in \mathrm{pred}(B)} \mathrm{out}[P] \) and \( \mathrm{out}[B] = \mathrm{gen}[B] \cup \bigl(\mathrm{in}[B] \setminus \mathrm{kill}[B]\bigr) \) to a fixed point (converging in two iterations). The exported CSVs (definitions map and per–block sets) provide data that match the tables in the report. Overall, the final \(\mathrm{IN}/\mathrm{OUT}\) table finds which definitions reach each block at entry and exit, enabling downstream optimizations and test–planning guided by CFG complexity.
+
+\section*{Conclusion}
+We constructed control–flow graphs (CFGs) for each program by finding leaders and forming basic blocks, followed by adding fall–through and branch edges to obtain nodes \(N\) and edges \(E\), with cyclomatic complexity computed as \(CC = E - N + 2\). The HTML–styled node labels ensured one–statement–per–line readability in the figures. For data–flow, we performed Reaching Definitions: assigned unique IDs (Dk) to all assignments, computed per–block \(\mathrm{gen}[B]\) and \(\mathrm{kill}[B]\), and iterated the forward equations \( \mathrm{in}[B] = \bigcup_{P \in \mathrm{pred}(B)} \mathrm{out}[P] \) and \( \mathrm{out}[B] = \mathrm{gen}[B] \cup \bigl(\mathrm{in}[B] \setminus \mathrm{kill}[B]\bigr) \) to a fixed point (converging in two iterations). The exported CSVs (definitions map and per–block sets) provide data that match the tables in the report. Overall, the final \(\mathrm{IN}/\mathrm{OUT}\) table finds which definitions reach each block at entry and exit, enabling downstream optimizations and test–planning guided by CFG complexity.
+
+
+
+\section*{References}
+\begin{itemize}
+  \item Reaching definition (Wikipedia): \url{https://en.wikipedia.org/wiki/Reaching_definition}
+  \item Cornell CS notes — Reaching Definitions and SSA: \url{https://www.cs.cornell.edu/courses/cs4120/2023sp/notes.html?id=reachdef}
+  \item Kildall (1973), A Unified Approach to Global Program Optimization (ACM DL): \url{https://dl.acm.org/doi/10.1145/512927.512945}
+\end{itemize}
+
+
+\end{document}
