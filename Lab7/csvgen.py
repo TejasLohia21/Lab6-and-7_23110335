@@ -2,7 +2,7 @@
 from Functions import *
 
 # 1) Parse and build CFG artifacts
-src = readfile("code1.c")
+src = readfile("code3.c")
 idxs, lines = leaders_from_src(src)
 blocks = build_blocks_from_leaders(lines, idxs)
 names, edges = build_cfg_edges(lines, blocks)
@@ -21,7 +21,7 @@ IN, OUT, logs = reaching_definitions(blocks, edges, gen, kill)
 # 5) Export CSVs
 import csv, os
 
-prefix = "code1"
+prefix = "code3"
 
 # 5a) Definitions map: one row per Dk
 with open(f"{prefix}_defs.csv", "w", newline="", encoding="utf-8") as f:

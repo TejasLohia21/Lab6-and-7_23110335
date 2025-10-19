@@ -139,6 +139,29 @@ def last_stmt_line(lines, s, e):
             return k
     return None
 
+# def build_cfg_edges(lines, blocks):
+#     edges = []
+#     names = [f"B{i}" for i in range(len(blocks))]
+#     for i, (s, e) in enumerate(blocks):
+#         name = names[i]
+#         k = last_stmt_line(lines, s, e)
+#         fall = True
+#         branch2 = False
+#         if k is not None:
+#             tail = lines[k]
+#             if is_return.match(tail) or is_break.match(tail) or is_continue.match(tail):
+#                 fall = False
+#             elif is_branch_hdr.match(tail):
+#                 branch2 = True
+#         if fall and i + 1 < len(blocks):
+#             edges.append((name, names[i + 1], "fall"))
+#         if branch2:
+#             if i + 1 < len(blocks):
+#                 edges.append((name, names[i + 1], "true"))
+#             if i + 2 < len(blocks):
+#                 edges.append((name, names[i + 2], "false"))
+#     return names, edges
+
 def build_line_to_block(blocks):
     line2b = {}
     for bi, (s,e) in enumerate(blocks):
